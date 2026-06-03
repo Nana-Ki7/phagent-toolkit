@@ -23,11 +23,16 @@
 ## 模块三：搜索与知识库 (searcher.py)
 
 功能：
-- **Web 搜索**：生成搜索建议关键词
 - **本地知识库**：SQLite 存储的 PH 规则/套路笔记（21条预设条目）
-- **博客检索**：搜索已索引的博客文章
-- **Memos 检索**：从 memos 中查找相关记录
-- **自定义扩展**：支持动态添加知识条目
+- **Web 搜索建议**：生成搜索关键词
+- **Blog/Memos 检索**：搜索已索引内容
+
+## 模块四：纸笔求解器 (solver.py)
+
+功能：
+- 支持 21 种常见纸笔谜题类型（Slitherlink、数桥、数独、Akari 等）
+- 生成 puzz.link / pzv.jp / cspuz-solver2 URL
+- 提供示例盘面
 
 ### 用法
 
@@ -37,11 +42,12 @@ python3 decoder.py "密文"
 
 # 提取
 python3 extractor.py first "word1 word2 word3"
-python3 extractor.py nutri "a b c d" --pattern "3 1 4"
 
-# 搜索
-python3 searcher.py init     # 初始化知识库
+# 搜索知识库
 python3 searcher.py kb "caesar"
-python3 searcher.py kb --list
-python3 searcher.py kb --add "keyword" "content" "category"
+
+# 纸笔求解 URL 生成
+python3 solver.py url slitherlink 5 5 "3a3a2a2a3a3a"
+python3 solver.py example slitherlink
+python3 solver.py list
 ```
