@@ -53,6 +53,33 @@ def caesar_decode(text, shift):
             result.append(c)
     return ''.join(result)
 
+
+def unicode_caesar_decode(text, shift):
+    """Unicode 凯撒：对中文字符按 Unicode 码点偏移"""
+    result = []
+    for c in text:
+        if ord(c) >= 0x4E00 and ord(c) <= 0x9FFF:
+            # 只在 CJK 统一表意文字范围内循环
+            new_code = ((ord(c) - 0x4E00 + shift) % (0x9FFF - 0x4E00 + 1)) + 0x4E00
+            result.append(chr(new_code))
+        else:
+            result.append(c)
+    return ''.join(result)
+
+def unicode_caesar_bruteforce(text):
+    """暴力破解 Unicode 凯撒，对 CJK 字符尝试偏移"""
+    results = []
+    for shift in range(1, 100):
+        decoded = unicode_caesar_decode(text, shift)
+        results.append((shift, decoded))
+    return results
+
+def unicode_caesar_auto(text):
+    """自动猜测 Unicode 凯撒偏移"""
+    results = unicode_caesar_bruteforce(text)
+    # 返回前5个，实际使用时可能需要人工判断
+    return results[:5]
+
 def caesar_bruteforce(text):
     """暴力破解凯撒密码，返回所有可能结果"""
     results = []
@@ -315,6 +342,22 @@ def decode_all(text):
         ('a1z26', a1z26_decode),
         ('bacon', bacon_decode),
     ]:
+        try:
+            decoded = func(text)
+            if decoded and len(decoded) > 0:
+                results.append((name, decoded[:200]))
+        except:
+            pass
+    
+    # 尝试 Unicode 凯撒（如果文本包含中文）
+    if any(ord(c) >= 0x4E00 and ord(c) <= 0x9FFF for c in text):
+        for shift in range(1, 20):
+            try:
+                decoded = unicode_caesar_decode(text, shift)
+                if decoded and decoded != text:
+                    results.append((f'unicode_caesar_+{shift}', decoded[:200]))
+            except:
+                pass
         try:
             decoded = func(text)
             if decoded and len(decoded) > 0:
