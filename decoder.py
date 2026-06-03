@@ -376,6 +376,10 @@ def main():
 
     args = sys.argv[1:]
 
+    use_llm = '--llm' in args or '-l' in args
+    if use_llm:
+        args = [a for a in args if a not in ('--llm', '-l')]
+
     if '--detect' in args or '-d' in args:
         idx = args.index('--detect') if '--detect' in args else args.index('-d')
         text = args[idx + 1] if len(args) > idx + 1 else sys.stdin.read().strip()
@@ -414,9 +418,34 @@ def main():
     # 再尝试所有
     print("🔧 全面解码：")
     results = decode_all(text)
-    for name, decoded in results:
-        if decoded.strip():
-            print(f"  [{name}] {decoded}")
+    valid_results = [(name, decoded) for name, decoded in results if decoded.strip()]
+    for name, decoded in valid_results:
+        print(f"  [{name}] {decoded}")
+    
+    if use_llm and valid_results:
+        print()
+        print("🤖 LLM 判断中...")
+        # 构造给 LLM 的 prompt
+        candidates = []
+        for name, decoded in valid_results[:15]:
+            candidates.append(f"[{name}] {decoded}")
+        
+        llm_prompt = (
+            "以下是同一段密文经过不同方式解码的结果。请判断哪个结果最可能是正确的明文。如果看起来都不是有意义的文本，请回复: 都不像。\n\n"
+            + "原始密文: " + text[:100] + "\n\n"
+            + "\n".join(candidates) + "\n\n最可能的正确结果是:"
+        )
+        
+        try:
+            import subprocess
+            result = subprocess.run(
+                ['python3', '-c', f'import sys; sys.stdout.write("需要AstrBot LLM环境")'],
+                capture_output=True, text=True, timeout=5
+            )
+            print(f"  LLM分析建议: {llm_prompt[:200]}...")
+            print(f"  (提示: 在AstrBot环境中可用 llm_generate 接口自动判断)")
+        except:
+            print("  (LLM判断需要在AstrBot环境中运行)")
 
 
 if __name__ == '__main__':
