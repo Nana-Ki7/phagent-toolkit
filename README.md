@@ -20,6 +20,15 @@
 - **对角线提取**：从矩阵中取对角线
 - **交叉比对**：多组结果的交集分析
 
+## 模块三：搜索与知识库 (searcher.py)
+
+功能：
+- **Web 搜索**：生成搜索建议关键词
+- **本地知识库**：SQLite 存储的 PH 规则/套路笔记（21条预设条目）
+- **博客检索**：搜索已索引的博客文章
+- **Memos 检索**：从 memos 中查找相关记录
+- **自定义扩展**：支持动态添加知识条目
+
 ### 用法
 
 ```bash
@@ -29,6 +38,10 @@ python3 decoder.py "密文"
 # 提取
 python3 extractor.py first "word1 word2 word3"
 python3 extractor.py nutri "a b c d" --pattern "3 1 4"
-python3 extractor.py interleave "abc" "def" "ghi"
-python3 extractor.py index "HelloWorld" --indices "1,6"
+
+# 搜索
+python3 searcher.py init     # 初始化知识库
+python3 searcher.py kb "caesar"
+python3 searcher.py kb --list
+python3 searcher.py kb --add "keyword" "content" "category"
 ```
